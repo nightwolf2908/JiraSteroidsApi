@@ -27,16 +27,22 @@ JiraSteroids es un clon de Jira de alto rendimiento diseñado bajo los estándar
     git clone [https://github.com/TU_USUARIO/JiraSteroidsApi.git](https://github.com/TU_USUARIO/JiraSteroidsApi.git)
     cd JiraSteroidsApi
 2. **Levantar la Base de Datos en Docker:**
+```bash
 docker compose up -d
 
 3. **Ejecutar las Migraciones de la Base de Datos:**
+```bash
 dotnet new tool-manifest
+
 dotnet tool install dotnet-ef
+
 dotnet tool run dotnet-ef database update --project src/JiraSteroids.Infrastructure --startup-project src/JiraSteroids.Api
 
 4. **Correr la API:**
+```bash
 cd src/JiraSteroids.Api
+
 dotnet run
 
 5. **Acceder a la documentación interactiva:**
-   **Abre en tu navegador: http://localhost:5154/swagger**
+   Abre en tu navegador: http://localhost:5154/swagger
