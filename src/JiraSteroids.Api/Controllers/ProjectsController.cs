@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using FluentValidation;
+// Asegúrate de que estos namespaces coincidan exactamente con tus carpetas de Queries y Commands
 using JiraSteroids.Application.Projects.Commands.CreateProject;
 using JiraSteroids.Application.Projects.Queries.GetAllProjects;
+using JiraSteroids.Application.Projects.Queries.GetProjectById;
 
 namespace JiraSteroids.Api.Controllers;
 
@@ -11,41 +13,53 @@ namespace JiraSteroids.Api.Controllers;
 public class ProjectsController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IValidator<CreateProjectCommand> _validator;
 
-    public ProjectsController(IMediator mediator, IValidator<CreateProjectCommand> validator)
+    // Inyectamos MediatR para despachar comandos y consultas de forma limpia
+    public ProjectsController(IMediator mediator)
     {
         _mediator = mediator;
-        _validator = validator;
     }
 
+    // 1. POST: Crear un nuevo proyecto
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateProjectCommand command)
     {
-        // 1. Validar la petición
-        var validationResult = await _validator.ValidateAsync(command);
-        
-        if (!validationResult.IsValid)
+        // Nota: Si usas FluentValidation con un Middleware de excepciones global, 
+        // puedes quitar este bloque IF y dejar que el middleware maneje los errores 400.
+        if (command == null)
         {
-            return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            return BadRequest("Los datos del proyecto no pueden ser nulos.");
         }
 
-        // 2. Enviar a MediatR
         var projectId = await _mediator.Send(command);
-
-        // 3. Responder con el ID creado
-        return CreatedAtAction(nameof(Create), new { id = projectId }, new { id = projectId });
+        
+        return CreatedAtAction(nameof(GetById), new { id = projectId }, new { id = projectId });
     }
+
+    // 2. GET: Obtener la lista general de proyectos (Básico)
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        // 1. Creamos el paquete de consulta vacío
-        var query = new GetAllProjectsQuery();
-
-        // 2. Se lo aventamos a MediatR para que busque al Handler correspondiente
-        var projects = await _mediator.Send(query);
-
-        // 3. Devolvemos un código 200 (OK) con la lista de proyectos que el Handler encontró
+        var projects = await _mediator.Send(new GetAllProjectsQuery());
         return Ok(projects);
     }
+
+    // 3. GET: Obtener el detalle de un proyecto específico con todas sus tareas colgadas
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var project = await _mediator.Send(new GetProjectByIdQuery(id));
+
+        if (project == null)
+        {
+            return NotFound(new { message = $"El proyecto con ID {id} no fue encontrado en la base de datos." });
+        }
+
+        // Retorna el proyecto completo incluyendo su lista interna de TaskItems gracias al Eager Loading
+        return Ok(project);
+    }
+}
+
+internal class GetProjectsQuery : IRequest<object>
+{
 }

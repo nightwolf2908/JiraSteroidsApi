@@ -13,7 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 // =========================================================================
 
 // Agregar los controladores tradicionales para la API
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Este ajuste mágico le dice a .NET que ignore los ciclos infinitos al armar el JSON
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 // Configurar Swagger (La documentación interactiva en el navegador)
 builder.Services.AddEndpointsApiExplorer();
