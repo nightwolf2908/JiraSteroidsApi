@@ -26,6 +26,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // REGISTRAR NUESTRO REPOSITORIO: "Cuando alguien pida IProjectRepository, dale un ProjectRepository real"
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+
 // CONFIGURAR MEDIATR: Le enseñamos a MediatR dónde buscar los Handlers (en la capa de Aplicación)
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProjectCommand).Assembly));
 
