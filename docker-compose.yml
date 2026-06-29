@@ -1,0 +1,15 @@
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: jirasteroids_postgres
+    environment:
+      POSTGRES_USER: abdiel_admin
+      POSTGRES_PASSWORD: MiPasswordSuperSeguro123!
+      POSTGRES_DB: JiraSteroidsDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

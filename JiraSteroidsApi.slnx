@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/JiraSteroids.Api/JiraSteroids.Api.csproj" />
+    <Project Path="src/JiraSteroids.Application/JiraSteroids.Application.csproj" />
+    <Project Path="src/JiraSteroids.Domain/JiraSteroids.Domain.csproj" />
+    <Project Path="src/JiraSteroids.Infrastructure/JiraSteroids.Infrastructure.csproj" />
+  </Folder>
+</Solution>
